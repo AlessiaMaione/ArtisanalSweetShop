@@ -28,18 +28,19 @@ public class GUIListaProdotti {
         try {
             List<ProdottoEntity> prodotti = ProdottoDAO.leggiTuttiProdotti();
             for (ProdottoEntity p : prodotti) {
-                model.addRow(new Object[]{
-                    p.getCodiceProdotto(),
-                    p.getNome(),
-                    p.getPrezzo()
-                });
+                if (p.getQuantitaDisponibile() > 0) {
+                    model.addRow(new Object[]{
+                        p.getCodiceProdotto(),
+                        p.getNome(),
+                        p.getPrezzo()
+                    });
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(frame, "❌ Errore nel caricamento dei prodotti: " + e.getMessage());
+            JOptionPane.showMessageDialog(frame, "Errore nel caricamento dei prodotti: " + e.getMessage());
         }
 
-        // Comandi quantità
         JPanel top = new JPanel();
         JLabel quantitàLabel = new JLabel("1");
         int[] quantità = {1};
@@ -82,13 +83,13 @@ public class GUIListaProdotti {
                 double prezzo = Double.parseDouble(model.getValueAt(riga, 2).toString());
 
                 carrello.add(new GUIArticolo(codice, nome, prezzo, quantità[0]));
-                JOptionPane.showMessageDialog(frame, "✅ Prodotto aggiunto al carrello!");
+                JOptionPane.showMessageDialog(frame, "Prodotto aggiunto al carrello!");
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(frame, "Errore durante l'aggiunta: " + ex.getMessage());
             }
         });
 
-        carrelloBtn.addActionListener(e -> new GUICarrello(frame, carrello));
+        carrelloBtn.addActionListener(e -> new GUICarrello(frame, carrello, nomeUtente));
 
         frame.add(top, BorderLayout.NORTH);
         frame.add(scroll, BorderLayout.CENTER);
@@ -128,3 +129,4 @@ public class GUIListaProdotti {
         public static String toString(GUIArticolo a) { return a.toString(); }
     }
 }
+
