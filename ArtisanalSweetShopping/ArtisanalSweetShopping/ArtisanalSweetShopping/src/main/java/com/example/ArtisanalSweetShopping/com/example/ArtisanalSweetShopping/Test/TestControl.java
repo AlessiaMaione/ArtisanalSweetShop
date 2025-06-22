@@ -29,7 +29,7 @@ public class TestControl {
             Object res = control.avviaOrdine(input);
 
             if (res instanceof OutputOrdine ord) {
-                System.out.println("✅ Ordine preparato!");
+                System.out.println("Ordine preparato!");
                 System.out.println("ID carrello: " + ord.idCarrello);
                 System.out.println("Totale: €" + ord.totale);
                 System.out.println("Messaggio: " + ord.messaggio);
