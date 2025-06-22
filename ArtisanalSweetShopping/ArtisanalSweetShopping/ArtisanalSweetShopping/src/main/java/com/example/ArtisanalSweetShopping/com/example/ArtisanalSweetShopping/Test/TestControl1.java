@@ -1,34 +1,50 @@
-package com.example.ArtisanalSweetShopping.Test;
+package com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Test;
 
-import com.example.ArtisanalSweetShopping.Database.ScontoDAO;
-import com.example.ArtisanalSweetShopping.Entity.ScontoEntity;
-import com.example.ArtisanalSweetShopping.Exception.DAOException;
-import com.example.ArtisanalSweetShopping.Exception.DBConnectionException;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Control.GestioneScontoControl;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Control.GestioneScontoControl.InputSconto;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Control.GestioneScontoControl.OutputSconto;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Exception.OperationException;
 
 public class TestControl1 {
-    public static void main(String[] args) {
-        String codiceTest = "SPRING25";
 
-        // Step 1: Crea un nuovo sconto
-        ScontoEntity sconto = new ScontoEntity(codiceTest, 25.0f, 101, false);
+    public static void main(String[] args) {
+
+        GestioneScontoControl control = new GestioneScontoControl();
+        String codiceTest = "TEST";
 
         try {
-            ScontoDAO.inserisciSconto(sconto);
-            System.out.println("✅ Sconto inserito correttamente: " + codiceTest);
+            //1: crea sconto temporaneo
+            InputSconto nuovo = new InputSconto();
+            nuovo.codiceSconto = codiceTest;
+            nuovo.percentuale = 25.0f;
+            nuovo.idImpiegato = 1; // Erika De Luca
+            nuovo.utilizzato = false;
 
-            // Step 2: Simula modifica (es. viene utilizzato)
-            sconto.setUtilizzato(true);
-            sconto.setPercentuale(20.0f); // cambia la percentuale
-            ScontoDAO.aggiornaSconto(sconto);
-            System.out.println("✏️  Sconto aggiornato: utilizzato = true, percentuale = 20.0");
+            OutputSconto creato = control.creaSconto(nuovo);
+            System.out.println("Sconto creato: " + creato.sconto.getCodiceSconto() +
+                    ", % = " + creato.sconto.getPercentuale() +
+                    ", ID impiegato = " + creato.sconto.getIdImpiegato());
 
-            // Step 3: Elimina alla fine per mantenere DB pulito
-            ScontoDAO.eliminaSconto(codiceTest);
-            System.out.println("🗑️  Sconto di test eliminato: " + codiceTest);
+            // 2: aggiorna sconto (simula utilizzo e modifica %)
+            InputSconto aggiornato = new InputSconto();
+            aggiornato.codiceSconto = codiceTest;
+            aggiornato.percentuale = 20.0f;
+            aggiornato.idImpiegato = 1;
+            aggiornato.utilizzato = true;
 
-        } catch (DAOException | DBConnectionException e) {
-            System.out.println("❌ Errore durante il test controllo sconti:");
+            OutputSconto mod = control.aggiornaSconto(aggiornato);
+            System.out.println("Sconto aggiornato: " + mod.sconto.getCodiceSconto() +
+                    ", usato = " + mod.sconto.isUtilizzato() +
+                    ", nuova % = " + mod.sconto.getPercentuale());
+
+            // 🔹 STEP 3: elimina sconto temporaneo
+            String eliminato = control.eliminaSconto(codiceTest);
+            System.out.println(eliminato);
+
+        } catch (OperationException e) {
+            System.out.println("Errore nel test completo:");
             e.printStackTrace();
         }
     }
 }
+
