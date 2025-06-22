@@ -1,4 +1,4 @@
-package com.example.ArtisanalSweetShopping.GUI;
+package com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.GUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,12 +8,12 @@ public class GUIImpiegatoMenu {
     private JFrame frame;
 
     public GUIImpiegatoMenu() {
-        frame = new JFrame("Pannello Impiegato - Seleziona Operazione");
+        frame = new JFrame("Pannello Impiegato");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(500, 400);
-        frame.setLayout(new BorderLayout());
+        frame.setLayout(new BorderLayout(10, 10));
 
-        JLabel titolo = new JLabel("Seleziona l'area da gestire", SwingConstants.CENTER);
+        JLabel titolo = new JLabel("Seleziona un'area da gestire", SwingConstants.CENTER);
         titolo.setFont(new Font("SansSerif", Font.BOLD, 20));
         frame.add(titolo, BorderLayout.NORTH);
 
@@ -21,24 +21,23 @@ public class GUIImpiegatoMenu {
         JButton btnSconti = new JButton("Gestione Sconti");
         JButton btnReport = new JButton("Report");
         JButton btnOrdini = new JButton("Gestione Ordini");
-        JButton btnEsci = new JButton("Esci");
+        JButton btnEsci = new JButton("Logout");
 
-        JPanel bottoniPanel = new JPanel(new GridLayout(5, 1, 15, 15));
-        bottoniPanel.setBorder(BorderFactory.createEmptyBorder(30, 80, 30, 80));
+        JPanel centro = new JPanel(new GridLayout(5, 1, 15, 15));
+        centro.setBorder(BorderFactory.createEmptyBorder(30, 80, 30, 80));
 
-        bottoniPanel.add(btnMagazzino);
-        bottoniPanel.add(btnSconti);
-        bottoniPanel.add(btnReport);
-        bottoniPanel.add(btnOrdini);
-        bottoniPanel.add(btnEsci);
+        centro.add(btnMagazzino);
+        centro.add(btnSconti);
+        centro.add(btnReport);
+        centro.add(btnOrdini);
+        centro.add(btnEsci);
 
-        frame.add(bottoniPanel, BorderLayout.CENTER);
+        frame.add(centro, BorderLayout.CENTER);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
         btnMagazzino.addActionListener(e -> {
-            JOptionPane.showMessageDialog(frame, "Modulo magazzino in costruzione!");
-            // new GUIGestioneMagazzino(); // quando disponibile
+            JOptionPane.showMessageDialog(frame, "Gestione magazzino non ancora disponibile.");
         });
 
         btnSconti.addActionListener(e -> {
@@ -47,11 +46,11 @@ public class GUIImpiegatoMenu {
         });
 
         btnReport.addActionListener(e -> {
-            JOptionPane.showMessageDialog(frame, "Sezione report ancora da glassare...");
+            JOptionPane.showMessageDialog(frame, "Sezione report in sviluppo.");
         });
 
         btnOrdini.addActionListener(e -> {
-            JOptionPane.showMessageDialog(frame, "Gestione ordini in arrivo!");
+            JOptionPane.showMessageDialog(frame, "Modulo ordini disponibile a breve.");
         });
 
         btnEsci.addActionListener(e -> {
