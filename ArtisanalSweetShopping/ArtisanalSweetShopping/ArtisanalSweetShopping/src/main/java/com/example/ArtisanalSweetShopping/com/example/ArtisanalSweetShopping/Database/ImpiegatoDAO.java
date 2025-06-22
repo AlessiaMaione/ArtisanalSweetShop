@@ -1,24 +1,23 @@
-package com.example.ArtisanalSweetShopping.Database;
+package com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Database;
 
-import com.example.ArtisanalSweetShopping.Entity.ImpiegatoEntity;
-import com.example.ArtisanalSweetShopping.Exception.DAOException;
-import com.example.ArtisanalSweetShopping.Exception.DBConnectionException;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Entity.ImpiegatoEntity;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Exception.DAOException;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Exception.DBConnectionException;
 
 import java.sql.*;
 
 public class ImpiegatoDAO {
 
     public static void creaImpiegato(ImpiegatoEntity imp) throws DAOException, DBConnectionException {
-        String query = "INSERT INTO Impiegato (id, nome, cognome, email, password) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Impiegati (IDImpiegato, Nome, Cognome, Password) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = DBManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setInt(1, imp.getId());
+            stmt.setInt(1, imp.getIDImpiegato());
             stmt.setString(2, imp.getNome());
             stmt.setString(3, imp.getCognome());
-            stmt.setString(4, imp.getEmail());
-            stmt.setString(5, imp.getPassword());
+            stmt.setString(4, imp.getPassword());
 
             stmt.executeUpdate();
 
@@ -28,22 +27,20 @@ public class ImpiegatoDAO {
     }
 
     public static ImpiegatoEntity leggiImpiegato(int id) throws DAOException, DBConnectionException {
-        String query = "SELECT * FROM Impiegato WHERE id = ?";
+        String query = "SELECT * FROM Impiegati WHERE IDImpiegato = ?";
         ImpiegatoEntity imp = null;
 
         try (Connection conn = DBManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setInt(1, id);
-
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                imp = new ImpiegatoEntity(
-                    rs.getInt("id"),
-                    rs.getString("nome"),
-                    rs.getString("cognome"),
-                    rs.getString("email"),
-                    rs.getString("password")
+                    imp = new ImpiegatoEntity(
+                            rs.getInt("IDImpiegato"),
+                            rs.getString("Nome"),
+                            rs.getString("Cognome"),
+                            rs.getString("Password")
                     );
                 }
             }
@@ -56,7 +53,7 @@ public class ImpiegatoDAO {
     }
 
     public static boolean verificaCredenziali(int id, String password) throws DAOException, DBConnectionException {
-        String query = "SELECT COUNT(*) FROM Impiegato WHERE id = ? AND password = ?";
+        String query = "SELECT COUNT(*) FROM Impiegati WHERE IDImpiegato = ? AND Password = ?";
 
         try (Connection conn = DBManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -74,16 +71,15 @@ public class ImpiegatoDAO {
     }
 
     public static void aggiornaImpiegato(ImpiegatoEntity imp) throws DAOException, DBConnectionException {
-        String query = "UPDATE Impiegato SET nome = ?, cognome = ?, email = ?, password = ? WHERE id = ?";
+        String query = "UPDATE Impiegati SET Nome = ?, Cognome = ?, Password = ? WHERE IDImpiegato = ?";
 
         try (Connection conn = DBManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, imp.getNome());
             stmt.setString(2, imp.getCognome());
-            stmt.setString(3, imp.getEmail());
-            stmt.setString(4, imp.getPassword());
-            stmt.setInt(5, imp.getId());
+            stmt.setString(3, imp.getPassword());
+            stmt.setInt(4, imp.getIDImpiegato());
 
             stmt.executeUpdate();
 
@@ -93,7 +89,7 @@ public class ImpiegatoDAO {
     }
 
     public static void eliminaImpiegato(int id) throws DAOException, DBConnectionException {
-        String query = "DELETE FROM Impiegato WHERE id = ?";
+        String query = "DELETE FROM Impiegati WHERE IDImpiegato = ?";
 
         try (Connection conn = DBManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
