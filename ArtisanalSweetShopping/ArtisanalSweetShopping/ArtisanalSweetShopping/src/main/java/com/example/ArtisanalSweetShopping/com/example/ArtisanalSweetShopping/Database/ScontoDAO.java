@@ -83,4 +83,24 @@ public class ScontoDAO{
             throw new DAOException("Errore nella rimozione dello sconto");
         }
     }
+    public static void aggiornaSconto(ScontoEntity sconto) throws DAOException, DBConnectionException {
+    String query = "UPDATE Sconto SET percentuale = ?, idImpiegato = ?, utilizzato = ? WHERE codiceSconto = ?";
+
+    try (Connection conn = DBManager.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(query)) {
+
+        stmt.setFloat(1, sconto.getPercentuale());
+        stmt.setInt(2, sconto.getIdImpiegato());
+        stmt.setBoolean(3, sconto.isUtilizzato());
+        stmt.setString(4, sconto.getCodiceSconto());
+
+        int righeModificate = stmt.executeUpdate();
+        if (righeModificate == 0) {
+            throw new DAOException("Nessuno sconto aggiornato: codice non trovato.");
+        }
+
+    } catch (SQLException e) {
+        throw new DAOException("Errore durante l’aggiornamento dello sconto.");
+    }
+}
 }
