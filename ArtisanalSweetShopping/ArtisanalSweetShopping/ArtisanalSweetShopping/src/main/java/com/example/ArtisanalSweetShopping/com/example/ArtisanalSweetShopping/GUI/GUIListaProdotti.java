@@ -12,6 +12,7 @@ import java.util.List;
 public class GUIListaProdotti {
 
     private final List<GUIArticolo> carrello = new ArrayList<>();
+    private final List<ProdottoEntity> prodottiDisponibili = new ArrayList<>();
 
     public GUIListaProdotti(String nomeUtente) {
         JFrame frame = new JFrame("Benvenuta " + nomeUtente + " - Prodotti disponibili");
@@ -19,20 +20,26 @@ public class GUIListaProdotti {
         frame.setSize(700, 500);
         frame.setLayout(new BorderLayout());
 
-        String[] colonne = {"Codice", "Nome", "Prezzo"};
-        DefaultTableModel model = new DefaultTableModel(colonne, 0);
+        String[] colonne = {"Codice", "Nome", "Prezzo", "Disponibili"};
+        DefaultTableModel model = new DefaultTableModel(colonne, 0) {
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         JTable tabella = new JTable(model);
         JScrollPane scroll = new JScrollPane(tabella);
 
-        // Carica prodotti da DB
+        // Carica prodotti dal database
         try {
-            List<ProdottoEntity> prodotti = ProdottoDAO.leggiTuttiProdotti();
-            for (ProdottoEntity p : prodotti) {
+            List<ProdottoEntity> tutti = ProdottoDAO.leggiTuttiProdotti();
+            for (ProdottoEntity p : tutti) {
                 if (p.getQuantitaDisponibile() > 0) {
+                    prodottiDisponibili.add(p);
                     model.addRow(new Object[]{
                         p.getCodiceProdotto(),
                         p.getNome(),
-                        p.getPrezzo()
+                        p.getPrezzo(),
+                        p.getQuantitaDisponibile()
                     });
                 }
             }
@@ -61,7 +68,7 @@ public class GUIListaProdotti {
         });
 
         JButton aggiungi = new JButton("Aggiungi al carrello");
-        JButton carrelloBtn = new JButton("🛒 Carrello");
+        JButton carrelloBtn = new JButton("Carrello");
 
         top.add(new JLabel("Quantità:"));
         top.add(meno);
@@ -78,11 +85,19 @@ public class GUIListaProdotti {
             }
 
             try {
-                String codice = model.getValueAt(riga, 0).toString();
-                String nome = model.getValueAt(riga, 1).toString();
-                double prezzo = Double.parseDouble(model.getValueAt(riga, 2).toString());
+                ProdottoEntity selezionato = prodottiDisponibili.get(riga);
 
-                carrello.add(new GUIArticolo(codice, nome, prezzo, quantità[0]));
+                if (quantità[0] > selezionato.getQuantitaDisponibile()) {
+                    JOptionPane.showMessageDialog(frame, "Quantità richiesta superiore alla disponibilità.");
+                    return;
+                }
+
+                carrello.add(new GUIArticolo(
+                        selezionato.getCodiceProdotto(),
+                        selezionato.getNome(),
+                        selezionato.getPrezzo(),
+                        quantità[0]
+                ));
                 JOptionPane.showMessageDialog(frame, "Prodotto aggiunto al carrello!");
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(frame, "Errore durante l'aggiunta: " + ex.getMessage());
