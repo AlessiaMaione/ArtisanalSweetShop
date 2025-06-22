@@ -1,9 +1,9 @@
-package com.example.ArtisanalSweetShopping.GUI;
+package com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.GUI;
 
-import com.example.ArtisanalSweetShopping.Database.ScontoDAO;
-import com.example.ArtisanalSweetShopping.Entity.ScontoEntity;
-import com.example.ArtisanalSweetShopping.Exception.DAOException;
-import com.example.ArtisanalSweetShopping.Exception.DBConnectionException;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Database.ScontoDAO;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Entity.ScontoEntity;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Exception.DAOException;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Exception.DBConnectionException;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -15,57 +15,57 @@ public class GUIGestioneSconti {
     private JFrame frame;
     private JTable table;
     private DefaultTableModel model;
-    private JTextField codiceField, percentualeField, idImpiegatoField;
+    private JTextField codiceField, percentualeField;
     private JCheckBox utilizzatoBox;
 
     public GUIGestioneSconti() {
         frame = new JFrame("Gestione Sconti");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(900, 500);
-        frame.setLayout(new BorderLayout());
+        frame.setSize(800, 500);
+        frame.setLayout(new BorderLayout(10, 10));
 
-        String[] colonne = {"Codice", "Percentuale", "ID Impiegato", "Utilizzato"};
-        model = new DefaultTableModel(colonne, 0);
+        model = new DefaultTableModel(new String[]{"Codice Sconto", "Percentuale", "Utilizzato"}, 0) {
+            public boolean isCellEditable(int row, int column) { return false; }
+        };
+
         table = new JTable(model);
         JScrollPane scrollPane = new JScrollPane(table);
+        frame.add(scrollPane, BorderLayout.CENTER);
 
-        JPanel pannelloCampi = new JPanel(new GridLayout(4, 2, 10, 10));
+        JPanel form = new JPanel(new GridLayout(3, 2, 10, 10));
         codiceField = new JTextField();
         percentualeField = new JTextField();
-        idImpiegatoField = new JTextField();
         utilizzatoBox = new JCheckBox("Utilizzato");
 
-        pannelloCampi.add(new JLabel("Codice Sconto:")); pannelloCampi.add(codiceField);
-        pannelloCampi.add(new JLabel("Percentuale:")); pannelloCampi.add(percentualeField);
-        pannelloCampi.add(new JLabel("ID Impiegato:")); pannelloCampi.add(idImpiegatoField);
-        pannelloCampi.add(new JLabel("")); pannelloCampi.add(utilizzatoBox);
+        form.add(new JLabel("Codice Sconto:"));
+        form.add(codiceField);
+        form.add(new JLabel("Percentuale:"));
+        form.add(percentualeField);
+        form.add(new JLabel(""));
+        form.add(utilizzatoBox);
 
-        JButton btnAggiungi = new JButton("Crea Sconto");
-        JButton btnModifica = new JButton("Modifica Sconto");
-        JButton btnElimina = new JButton("Elimina Sconto");
+        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        JButton btnAggiungi = new JButton("Crea");
+        JButton btnModifica = new JButton("Modifica");
+        JButton btnElimina = new JButton("Elimina");
         JButton btnIndietro = new JButton("Indietro");
 
-        JPanel pannelloBottoni = new JPanel(new FlowLayout());
-        pannelloBottoni.add(btnAggiungi);
-        pannelloBottoni.add(btnModifica);
-        pannelloBottoni.add(btnElimina);
-        pannelloBottoni.add(btnIndietro);
+        buttons.add(btnAggiungi);
+        buttons.add(btnModifica);
+        buttons.add(btnElimina);
+        buttons.add(btnIndietro);
 
-        JPanel pannelloEst = new JPanel(new BorderLayout(10, 10));
-        pannelloEst.add(pannelloCampi, BorderLayout.NORTH);
-        pannelloEst.add(pannelloBottoni, BorderLayout.SOUTH);
+        JPanel rightPanel = new JPanel(new BorderLayout(10, 10));
+        rightPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        rightPanel.add(form, BorderLayout.NORTH);
+        rightPanel.add(buttons, BorderLayout.SOUTH);
 
-        frame.add(scrollPane, BorderLayout.CENTER);
-        frame.add(pannelloEst, BorderLayout.EAST);
-
-        caricaSconti();
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
+        frame.add(rightPanel, BorderLayout.EAST);
 
         btnAggiungi.addActionListener(e -> {
             try {
                 ScontoEntity sconto = raccogliDatiSconto();
-                ScontoDAO.inserisciSconto(sconto);
+                ScontoDAO.creaSconto(sconto);
                 caricaSconti();
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(frame, "Errore creazione: " + ex.getMessage());
@@ -78,7 +78,6 @@ public class GUIGestioneSconti {
                 JOptionPane.showMessageDialog(frame, "Seleziona uno sconto da modificare.");
                 return;
             }
-
             try {
                 ScontoEntity sconto = raccogliDatiSconto();
                 ScontoDAO.aggiornaSconto(sconto);
@@ -94,10 +93,9 @@ public class GUIGestioneSconti {
                 JOptionPane.showMessageDialog(frame, "Seleziona uno sconto da eliminare.");
                 return;
             }
-
-            String codice = (String) model.getValueAt(riga, 0);
-            int conferma = JOptionPane.showConfirmDialog(frame, "Eliminare lo sconto \"" + codice + "\"?", "Conferma", JOptionPane.YES_NO_OPTION);
-            if (conferma == JOptionPane.YES_OPTION) {
+            String codice = model.getValueAt(riga, 0).toString();
+            int ok = JOptionPane.showConfirmDialog(frame, "Eliminare lo sconto \"" + codice + "\"?", "Conferma", JOptionPane.YES_NO_OPTION);
+            if (ok == JOptionPane.YES_OPTION) {
                 try {
                     ScontoDAO.eliminaSconto(codice);
                     caricaSconti();
@@ -117,19 +115,21 @@ public class GUIGestioneSconti {
             if (i >= 0) {
                 codiceField.setText(model.getValueAt(i, 0).toString());
                 percentualeField.setText(model.getValueAt(i, 1).toString());
-                idImpiegatoField.setText(model.getValueAt(i, 2).toString());
-                utilizzatoBox.setSelected(Boolean.parseBoolean(model.getValueAt(i, 3).toString()));
+                utilizzatoBox.setSelected(Boolean.parseBoolean(model.getValueAt(i, 2).toString()));
             }
         });
+
+        caricaSconti();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     }
 
     private ScontoEntity raccogliDatiSconto() {
         String codice = codiceField.getText().trim();
         float perc = Float.parseFloat(percentualeField.getText().trim());
-        int id = Integer.parseInt(idImpiegatoField.getText().trim());
         boolean usato = utilizzatoBox.isSelected();
-
-        return new ScontoEntity(codice, perc, id, usato);
+        int idImpiegato = GUIImpiegatoLogin.getIdLoggato();
+        return new ScontoEntity(codice, perc, idImpiegato, usato);
     }
 
     private void caricaSconti() {
@@ -140,7 +140,6 @@ public class GUIGestioneSconti {
                 model.addRow(new Object[] {
                         s.getCodiceSconto(),
                         s.getPercentuale(),
-                        s.getIdImpiegato(),
                         s.isUtilizzato()
                 });
             }
@@ -151,4 +150,5 @@ public class GUIGestioneSconti {
 
     public static void main(String[] args) {
         new GUIGestioneSconti();
-    
+    }
+}
