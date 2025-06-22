@@ -1,59 +1,47 @@
-package com.example.ArtisanalSweetShopping.Entity;
+package com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Entity;
 
 public class ImpiegatoEntity {
-    private int id;
+    private int IDImpiegato;
     private String nome;
     private String cognome;
-    private String email;
     private String password;
 
-    public ImpiegatoEntity(int id, String nome, String cognome, String email, String password) {
-        this.id = id;
+    public ImpiegatoEntity(int IDImpiegato, String nome, String cognome, String password) {
+        this.IDImpiegato = IDImpiegato;
         this.nome = nome;
         this.cognome = cognome;
-        this.email = email;
         this.password = password;
     }
 
-    // Getters e Setters
-
-    public int getId() {
-        return id;
+    public int getIDImpiegato() {
+    	return IDImpiegato;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setIDImpiegato(int IDImpiegato) {
+    	this.IDImpiegato = IDImpiegato;
     }
 
     public String getNome() {
-        return nome;
+    	return nome;
     }
 
     public void setNome(String nome) {
-        this.nome = nome;
+    	this.nome = nome;
     }
 
     public String getCognome() {
-        return cognome;
+    	return cognome;
     }
 
     public void setCognome(String cognome) {
-        this.cognome = cognome;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    	this.cognome = cognome;
+    	}
 
     public String getPassword() {
-        return password;
-    }
+    	return password;
+    	}
 
     public void setPassword(String password) {
-        this.password = password;
-    }
+    	this.password = password;
+    	}
 }
