@@ -112,7 +112,7 @@ public class GUICliente{
                 double prezzo = Double.parseDouble(tableModel.getValueAt(riga, 2).toString());
 
                 carrello.add(new CarrelloItem(codice, nome, prezzo, quantita));
-                carrelloArea.append("➕ " + nome + " x" + quantita + " (€" + (prezzo * quantita) + ")\n");
+                carrelloArea.append(nome + " x" + quantita + " (€" + (prezzo * quantita) + ")\n");
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(frame, "Quantità non valida.");
             }
@@ -140,7 +140,7 @@ public class GUICliente{
                     carrelloId = ord.idCarrello;
                     carrelloArea.append("Totale: €" + ord.totale + "\n");
                 } else if (res instanceof OutputPagamentoFallito fail) {
-                    carrelloArea.append("⚠️ " + fail.messaggio + "\n➡️ " + fail.suggerimento + "\n");
+                    carrelloArea.append( fail.messaggio + "\n " + fail.suggerimento + "\n");
                 }
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(frame, "Errore nel checkout: " + ex.getMessage());
@@ -201,3 +201,4 @@ public class GUICliente{
         new GUICliente();
     }
 }
+
