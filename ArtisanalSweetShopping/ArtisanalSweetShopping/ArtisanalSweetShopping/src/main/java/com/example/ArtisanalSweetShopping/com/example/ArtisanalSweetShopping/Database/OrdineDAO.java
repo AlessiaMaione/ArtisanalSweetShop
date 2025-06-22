@@ -1,14 +1,10 @@
 package com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Database;
 
-import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Exception.DBConnectionException;
-import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Exception.DAOException;
 import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Entity.OrdineEntity;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Exception.DAOException;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Exception.DBConnectionException;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class OrdineDAO {
 
