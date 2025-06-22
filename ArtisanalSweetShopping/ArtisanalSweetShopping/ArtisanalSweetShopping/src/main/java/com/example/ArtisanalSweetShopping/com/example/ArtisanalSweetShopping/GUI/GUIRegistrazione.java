@@ -1,47 +1,97 @@
 package com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.GUI;
 
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Database.ClienteRegistratoDAO;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Entity.ClienteRegistratoEntity;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Exception.DAOException;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Exception.DBConnectionException;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class GUIRegistrazione {
 
+    private JFrame frame;
+    private JTextField usernameField, emailField, telefonoField, cartaField;
+    private JPasswordField passwordField;
+
     public GUIRegistrazione() {
-        JFrame frame = new JFrame("Registrazione");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 400);
-        frame.setLayout(new BorderLayout());
+        initialize();
+    }
 
-        JLabel titolo = new JLabel("Registrazione Nuovo Cliente", SwingConstants.CENTER);
-        titolo.setFont(new Font("SansSerif", Font.BOLD, 16));
-        frame.add(titolo, BorderLayout.NORTH);
+    private void initialize() {
+        frame = new JFrame("Registrazione Cliente");
+        frame.setBounds(100, 100, 400, 350);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setLayout(new GridLayout(7, 2, 5, 5));
 
-        JPanel form = new JPanel(new GridLayout(7, 2, 10, 10));
-        JTextField nomeField = new JTextField();
-        JTextField cognomeField = new JTextField();
-        JTextField emailField = new JTextField();
-        JTextField telefonoField = new JTextField();
-        JTextField usernameField = new JTextField();
-        JPasswordField passwordField = new JPasswordField();
+        JLabel lblUsername = new JLabel("Nome utente:");
+        JLabel lblPassword = new JLabel("Password:");
+        JLabel lblEmail = new JLabel("Email:");
+        JLabel lblTelefono = new JLabel("Telefono:");
+        JLabel lblCarta = new JLabel("Numero carta:");
+
+        usernameField = new JTextField();
+        passwordField = new JPasswordField();
+        emailField = new JTextField();
+        telefonoField = new JTextField();
+        cartaField = new JTextField();
+
         JButton registrati = new JButton("Registrati");
+        JButton annulla = new JButton("Annulla");
 
-        form.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        form.add(new JLabel("Nome:")); form.add(nomeField);
-        form.add(new JLabel("Cognome:")); form.add(cognomeField);
-        form.add(new JLabel("Email:")); form.add(emailField);
-        form.add(new JLabel("Telefono:")); form.add(telefonoField);
-        form.add(new JLabel("Nome utente:")); form.add(usernameField);
-        form.add(new JLabel("Password:")); form.add(passwordField);
-        form.add(new JLabel()); form.add(registrati);
-        frame.add(form, BorderLayout.CENTER);
+        frame.add(lblUsername); frame.add(usernameField);
+        frame.add(lblPassword); frame.add(passwordField);
+        frame.add(lblEmail); frame.add(emailField);
+        frame.add(lblTelefono); frame.add(telefonoField);
+        frame.add(lblCarta); frame.add(cartaField);
+        frame.add(registrati); frame.add(annulla);
 
+        // Azione Registrazione
         registrati.addActionListener(e -> {
-            // TODO: Salva utente nel database
-            JOptionPane.showMessageDialog(frame, "Registrazione completata con successo 🎉");
-            frame.dispose();
-            new GUILogin();
+            try {
+                String username = usernameField.getText().trim();
+                String password = new String(passwordField.getPassword()).trim();
+                String email = emailField.getText().trim();
+                String telefono = telefonoField.getText().trim();
+                String numeroCarta = cartaField.getText().trim();
+
+                if (username.isEmpty() || password.isEmpty() || email.isEmpty() || telefono.isEmpty() || numeroCarta.isEmpty()) {
+                    JOptionPane.showMessageDialog(frame, "Compila tutti i campi");
+                    return;
+                }
+
+                if (ClienteRegistratoDAO.leggiCliente(username) != null) {
+                    JOptionPane.showMessageDialog(frame, "Nome utente già registrato");
+                    return;
+                }
+
+                ClienteRegistratoEntity nuovoCliente = new ClienteRegistratoEntity(
+                        username,
+                        password,
+                        email,
+                        telefono,
+                        0,
+                        numeroCarta
+                );
+
+                ClienteRegistratoDAO.creaCliente(nuovoCliente);
+                JOptionPane.showMessageDialog(frame, "Registrazione completata con successo");
+                frame.dispose();
+                new GUILogin();
+
+            } catch (DAOException | DBConnectionException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(frame, "Errore: " + ex.getMessage());
+            }
         });
 
-        frame.setLocationRelativeTo(null);
+        annulla.addActionListener(e -> frame.dispose());
+
         frame.setVisible(true);
     }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(GUIRegistrazione::new);
+    }
 }
+
