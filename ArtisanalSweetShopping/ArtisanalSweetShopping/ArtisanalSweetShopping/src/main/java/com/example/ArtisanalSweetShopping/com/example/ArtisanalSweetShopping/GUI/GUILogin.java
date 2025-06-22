@@ -53,7 +53,7 @@ public class GUILogin {
                     return;
                 }
 
-                JOptionPane.showMessageDialog(frame, "✅ Benvenuta " + username + "!");
+                JOptionPane.showMessageDialog(frame, "Benvenuta " + username + "!");
                 frame.dispose();
                 new GUIListaProdotti(username);
 
