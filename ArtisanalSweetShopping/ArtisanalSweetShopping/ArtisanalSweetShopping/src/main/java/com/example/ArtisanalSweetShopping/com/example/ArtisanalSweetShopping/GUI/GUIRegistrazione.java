@@ -94,4 +94,3 @@ public class GUIRegistrazione {
         SwingUtilities.invokeLater(GUIRegistrazione::new);
     }
 }
-
