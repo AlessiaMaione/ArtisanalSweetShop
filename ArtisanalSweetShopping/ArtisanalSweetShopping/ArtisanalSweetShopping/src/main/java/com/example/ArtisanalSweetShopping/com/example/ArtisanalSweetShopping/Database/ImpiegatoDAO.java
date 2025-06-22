@@ -38,13 +38,13 @@ public class ImpiegatoDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    imp = new ImpiegatoEntity(
-                        rs.getInt("id"),
-                        rs.getString("nome"),
-                        rs.getString("cognome"),
-                        rs.getString("email")
+                imp = new ImpiegatoEntity(
+                    rs.getInt("id"),
+                    rs.getString("nome"),
+                    rs.getString("cognome"),
+                    rs.getString("email"),
+                    rs.getString("password")
                     );
-                    imp.setPassword(rs.getString("password")); // se presente in Entity
                 }
             }
 
