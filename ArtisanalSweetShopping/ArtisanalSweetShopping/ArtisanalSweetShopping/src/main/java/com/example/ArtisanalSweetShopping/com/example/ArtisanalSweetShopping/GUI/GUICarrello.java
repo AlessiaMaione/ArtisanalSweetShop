@@ -1,15 +1,13 @@
 package com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.GUI;
 
 import javax.swing.*;
-
-import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.GUI.GUIListaProdotti.GUIArticolo;
-
 import java.awt.*;
 import java.util.List;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.GUI.GUIListaProdotti.GUIArticolo;
 
 public class GUICarrello {
 
-    public GUICarrello(JFrame precedente, List<GUIArticolo> articoli) {
+    public GUICarrello(JFrame precedente, List<GUIArticolo> articoli, String nomeUtente) {
         JFrame frame = new JFrame("Carrello");
         frame.setSize(400, 400);
         frame.setLayout(new BorderLayout());
@@ -36,7 +34,7 @@ public class GUICarrello {
 
         procedi.addActionListener(e -> {
             frame.dispose();
-            new GUIPagamento(totale[0]);
+            new GUIPagamento(totale[0], articoli, nomeUtente);
         });
 
         annulla.addActionListener(e -> {
