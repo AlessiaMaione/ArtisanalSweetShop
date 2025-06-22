@@ -1,19 +1,15 @@
 package com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Database;
 
-
-import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Exception.DBConnectionException;
-import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Exception.DAOException;
 import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Entity.ClienteRegistratoEntity;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Exception.DAOException;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Exception.DBConnectionException;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class ClienteRegistratoDAO {
 
     public static void creaCliente(ClienteRegistratoEntity cliente) throws DAOException, DBConnectionException {
-        String query = "INSERT INTO ClientiRegistrati (NomeUtente, Password, Email, NumeroTelefono, NumeroOrdini) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO ClientiRegistrati (NomeUtente, Password, Email, NumeroTelefono, NumeroOrdini, NumeroCarta) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DBManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -23,13 +19,13 @@ public class ClienteRegistratoDAO {
             stmt.setString(3, cliente.getEmail());
             stmt.setString(4, cliente.getNumeroTelefono());
             stmt.setInt(5, cliente.getNumeroOrdini());
+            stmt.setString(6, cliente.getNumeroCarta());
 
             stmt.executeUpdate();
 
         } catch (SQLException e) {
             throw new DAOException("Errore nella creazione del cliente registrato");
-            }
-        
+        }
     }
 
     public static ClienteRegistratoEntity leggiCliente(String nomeUtente) throws DAOException, DBConnectionException {
@@ -62,7 +58,7 @@ public class ClienteRegistratoDAO {
     }
 
     public static void aggiornaCliente(ClienteRegistratoEntity cliente) throws DAOException, DBConnectionException {
-        String query = "UPDATE ClientiRegistrati SET Password = ?, Email = ?, NumeroTelefono = ?, NumeroOrdini = ? WHERE NomeUtente = ?";
+        String query = "UPDATE ClientiRegistrati SET Password = ?, Email = ?, NumeroTelefono = ?, NumeroOrdini = ?, NumeroCarta = ? WHERE NomeUtente = ?";
 
         try (Connection conn = DBManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -71,7 +67,8 @@ public class ClienteRegistratoDAO {
             stmt.setString(2, cliente.getEmail());
             stmt.setString(3, cliente.getNumeroTelefono());
             stmt.setInt(4, cliente.getNumeroOrdini());
-            stmt.setString(5, cliente.getNomeUtente());
+            stmt.setString(5, cliente.getNumeroCarta());
+            stmt.setString(6, cliente.getNomeUtente());
 
             stmt.executeUpdate();
 
@@ -108,3 +105,4 @@ public class ClienteRegistratoDAO {
         }
     }
 }
+
