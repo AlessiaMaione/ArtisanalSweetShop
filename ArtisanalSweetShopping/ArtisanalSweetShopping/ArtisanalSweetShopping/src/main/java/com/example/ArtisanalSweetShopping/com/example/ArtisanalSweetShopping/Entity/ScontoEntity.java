@@ -1,6 +1,7 @@
 package com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Entity;
 
 public class ScontoEntity {
+
     private String codiceSconto;
     private float percentuale;
     private int idImpiegato;
