@@ -1,40 +1,46 @@
 package com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Test;
 
-
 import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Control.AcquistoOnlineControl;
-import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Exception.OperationException;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Control.AcquistoOnlineControl.InputOrdine;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Control.AcquistoOnlineControl.OutputOrdine;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Control.AcquistoOnlineControl.OutputPagamentoFallito;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Control.AcquistoOnlineControl.ProdottoQuantita;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class TestAcquistoOnline {
-
     public static void main(String[] args) {
+        InputOrdine input = new InputOrdine();
+        input.nomeUtente = "andrea.bianchi"; 
+        input.indirizzo = "Via Cardamomo 23";
+        input.codiceSconto = "Sconto01";      
+        input.cartaCredito = "4111111111111111";
 
-        AcquistoOnlineControl control = new AcquistoOnlineControl();
-
-        String utente = "Alessia";                         // già registrato nel DB
-        List<String> codici = Arrays.asList("P013", "P017");    // prodotti esistenti
-        List<Integer> quantita = Arrays.asList(2, 1);
-        String indirizzo = "Via Mille 10, Ancona";
-        String cartaInput = "1234098765434567";                 // serve solo se l'utente non ha carta memorizzata
-
-        ArrayList<Integer> idTemporanei = new ArrayList<>();
+        List<ProdottoQuantita> prodotti = new ArrayList<>();
+        ProdottoQuantita p = new ProdottoQuantita();
+        p.codiceProdotto = "P013";
+        p.quantita = 2;
+        prodotti.add(p);
+        input.prodotti = prodotti;
 
         try {
-            System.out.println("Avvio ordine online...");
+            AcquistoOnlineControl control = new AcquistoOnlineControl();
+            Object res = control.avviaOrdine(input);
 
-            ArrayList<String> output = control.acquistoOnline(utente, codici, quantita, indirizzo, cartaInput, idTemporanei);
+            if (res instanceof OutputOrdine ord) {
+                System.out.println("Ordine preparato!");
+                System.out.println("ID carrello: " + ord.idCarrello);
+                System.out.println("Totale: €" + ord.totale);
+                System.out.println("Messaggio: " + ord.messaggio);
+            } else if (res instanceof OutputPagamentoFallito fail) {
+                System.out.println("Pagamento fallito: " + fail.messaggio);
+                System.out.println("Suggerimento: " + fail.suggerimento);
+            } else {
+                System.out.println("Risultato non riconosciuto.");
+            }
 
-            System.out.println("Totale: €" + output.get(0));
-            System.out.println("Carta: " + output.get(1));
-            System.out.println("Carrello temporaneo salvato, ID: " + idTemporanei);
-
-            System.out.println("\n Conferma ordine...");
-            control.confermaOrdineOnline(idTemporanei);
-
-        } catch (OperationException e) {
+        } catch (Exception e) {
             System.out.println("Errore durante il test:");
             e.printStackTrace();
         }
