@@ -3,12 +3,13 @@ package com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Da
 import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Exception.DAOException;
 import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Exception.DBConnectionException;
 import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Entity.ScontoEntity;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.ResultSet;
 
-public class ScontoDAO{
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ScontoDAO {
 
     public static void creaSconto(ScontoEntity sconto) throws DAOException, DBConnectionException {
         String query = "INSERT INTO Sconti (CodiceSconto, Percentuale, IDImpiegato, Utilizzato) VALUES (?, ?, ?, ?)";
@@ -48,10 +49,8 @@ public class ScontoDAO{
             }
 
         } catch (SQLException e) {
-            e.printStackTrace(); // 👈 stampa l'errore preciso
             throw new DAOException("Errore nella lettura dello sconto");
         }
-
 
         return sconto;
     }
@@ -83,48 +82,50 @@ public class ScontoDAO{
             throw new DAOException("Errore nella rimozione dello sconto");
         }
     }
+
     public static void aggiornaSconto(ScontoEntity sconto) throws DAOException, DBConnectionException {
-    String query = "UPDATE Sconto SET percentuale = ?, idImpiegato = ?, utilizzato = ? WHERE codiceSconto = ?";
+        String query = "UPDATE Sconti SET Percentuale = ?, IDImpiegato = ?, Utilizzato = ? WHERE CodiceSconto = ?";
 
-    try (Connection conn = DBManager.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = DBManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
 
-        stmt.setFloat(1, sconto.getPercentuale());
-        stmt.setInt(2, sconto.getIdImpiegato());
-        stmt.setBoolean(3, sconto.isUtilizzato());
-        stmt.setString(4, sconto.getCodiceSconto());
+            stmt.setFloat(1, sconto.getPercentuale());
+            stmt.setInt(2, sconto.getIdImpiegato());
+            stmt.setBoolean(3, sconto.isUtilizzato());
+            stmt.setString(4, sconto.getCodiceSconto());
 
-        int righeModificate = stmt.executeUpdate();
-        if (righeModificate == 0) {
-            throw new DAOException("Nessuno sconto aggiornato: codice non trovato.");
+            int righeModificate = stmt.executeUpdate();
+            if (righeModificate == 0) {
+                throw new DAOException("Nessuno sconto aggiornato: codice non trovato.");
+            }
+
+        } catch (SQLException e) {
+            throw new DAOException("Errore durante l’aggiornamento dello sconto.");
         }
-
-    } catch (SQLException e) {
-        throw new DAOException("Errore durante l’aggiornamento dello sconto.");
     }
-}
+
     public static List<ScontoEntity> leggiTuttiSconti() throws DAOException, DBConnectionException {
-    List<ScontoEntity> lista = new ArrayList<>();
-    String query = "SELECT * FROM Sconto";
+        List<ScontoEntity> lista = new ArrayList<>();
+        String query = "SELECT * FROM Sconti";
 
-    try (Connection conn = DBManager.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(query);
-         ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = DBManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
 
-        while (rs.next()) {
-            ScontoEntity sconto = new ScontoEntity(
-                rs.getString("codiceSconto"),
-                rs.getFloat("percentuale"),
-                rs.getInt("idImpiegato"),
-                rs.getBoolean("utilizzato")
-            );
-            lista.add(sconto);
+            while (rs.next()) {
+                ScontoEntity sconto = new ScontoEntity(
+                    rs.getString("CodiceSconto"),
+                    rs.getFloat("Percentuale"),
+                    rs.getInt("IDImpiegato"),
+                    rs.getBoolean("Utilizzato")
+                );
+                lista.add(sconto);
+            }
+
+        } catch (SQLException e) {
+            throw new DAOException("Errore durante il recupero degli sconti dal database.");
         }
 
-    } catch (SQLException e) {
-        throw new DAOException("Errore durante il recupero degli sconti dal database.");
+        return lista;
     }
-
-    return lista;
-}
 }
