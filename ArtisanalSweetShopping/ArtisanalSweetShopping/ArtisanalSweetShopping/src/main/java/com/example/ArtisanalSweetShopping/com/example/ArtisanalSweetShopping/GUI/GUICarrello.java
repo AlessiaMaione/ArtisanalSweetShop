@@ -49,4 +49,3 @@ public class GUICarrello {
         precedente.setVisible(false);
     }
 }
-
