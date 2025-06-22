@@ -103,4 +103,28 @@ public class ScontoDAO{
         throw new DAOException("Errore durante l’aggiornamento dello sconto.");
     }
 }
+    public static List<ScontoEntity> leggiTuttiSconti() throws DAOException, DBConnectionException {
+    List<ScontoEntity> lista = new ArrayList<>();
+    String query = "SELECT * FROM Sconto";
+
+    try (Connection conn = DBManager.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(query);
+         ResultSet rs = stmt.executeQuery()) {
+
+        while (rs.next()) {
+            ScontoEntity sconto = new ScontoEntity(
+                rs.getString("codiceSconto"),
+                rs.getFloat("percentuale"),
+                rs.getInt("idImpiegato"),
+                rs.getBoolean("utilizzato")
+            );
+            lista.add(sconto);
+        }
+
+    } catch (SQLException e) {
+        throw new DAOException("Errore durante il recupero degli sconti dal database.");
+    }
+
+    return lista;
+}
 }
