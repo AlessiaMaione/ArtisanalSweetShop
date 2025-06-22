@@ -12,38 +12,41 @@ public class GUIPagamento {
 
     public GUIPagamento(double totale, List<GUIArticolo> carrello, String nomeUtente) {
         JFrame frame = new JFrame("Pagamento");
-        frame.setSize(400, 250);
+        frame.setSize(420, 300);
         frame.setLayout(new BorderLayout());
 
         JLabel titolo = new JLabel("Totale da pagare: €" + String.format("%.2f", totale), SwingConstants.CENTER);
         titolo.setFont(new Font("SansSerif", Font.BOLD, 16));
         frame.add(titolo, BorderLayout.NORTH);
 
-        JPanel form = new JPanel(new GridLayout(3, 2, 10, 10));
+        JPanel form = new JPanel(new GridLayout(4, 2, 10, 10));
         JTextField indirizzo = new JTextField();
         JTextField carta = new JTextField();
+        JTextField scontoField = new JTextField();  // Campo opzionale
+
         JButton conferma = new JButton("Conferma Ordine");
 
         form.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
         form.add(new JLabel("Indirizzo di consegna:")); form.add(indirizzo);
         form.add(new JLabel("Numero carta:")); form.add(carta);
+        form.add(new JLabel("Codice sconto (opzionale):")); form.add(scontoField);
         form.add(new JLabel()); form.add(conferma);
 
         frame.add(form, BorderLayout.CENTER);
 
         conferma.addActionListener(e -> {
             if (indirizzo.getText().trim().isEmpty() || carta.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(frame, "Compila tutti i campi.");
+                JOptionPane.showMessageDialog(frame, "Compila tutti i campi obbligatori.");
                 return;
             }
 
             try {
-                // Preparo input ordine
+                // Preparo l'input
                 AcquistoControl.InputOrdine input = new AcquistoControl.InputOrdine();
                 input.nomeUtente = nomeUtente;
                 input.indirizzo = indirizzo.getText().trim();
                 input.cartaCredito = carta.getText().trim();
-                input.codiceSconto = null;
+                input.codiceSconto = scontoField.getText().trim().isEmpty() ? null : scontoField.getText().trim();
                 input.prodotti = new ArrayList<>();
 
                 for (GUIArticolo a : carrello) {
@@ -63,7 +66,6 @@ public class GUIPagamento {
                     return;
                 }
 
-                // Conferma ordine
                 Object confermaOrdine = new AcquistoControl().confermaOrdine(idCarrello);
                 if (confermaOrdine instanceof String confermaMsg) {
                     JOptionPane.showMessageDialog(frame, confermaMsg + "\nGrazie per l'acquisto!");
@@ -83,7 +85,6 @@ public class GUIPagamento {
         frame.setVisible(true);
     }
 }
-
 
             JOptionPane.showMessageDialog(frame, "Ordine confermato! Grazie per l'acquisto.");
             frame.dispose();
