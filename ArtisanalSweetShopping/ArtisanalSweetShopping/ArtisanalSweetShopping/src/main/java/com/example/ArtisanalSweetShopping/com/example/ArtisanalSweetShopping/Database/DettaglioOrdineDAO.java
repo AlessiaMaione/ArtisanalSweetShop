@@ -1,112 +1,108 @@
 package com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Database;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Entity.ClienteRegistratoEntity;
 import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Exception.DAOException;
 import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Exception.DBConnectionException;
-import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Entity.DettagliOrdineEntity;
 
-public class DettaglioOrdineDAO {
-    public static void aggiungiDettaglio(DettagliOrdineEntity dettaglio)
-            throws DAOException, DBConnectionException {
-        String query = "INSERT INTO Carrello (IDOrdine, CodiceProdotto, Quantita) VALUES (?, ?, ?)";
+import java.sql.*;
+
+public class ClienteRegistratoDAO {
+
+    public static void creaCliente(ClienteRegistratoEntity cliente) throws DAOException, DBConnectionException {
+        String query = "INSERT INTO ClientiRegistrati (NomeUtente, Password, Email, NumeroTelefono, NumeroOrdini, NumeroCarta) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DBManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setInt(1, dettaglio.getIdOrdine());
-            stmt.setString(2, dettaglio.getCodiceProdotto());
-            stmt.setInt(3, dettaglio.getQuantita());
+            stmt.setString(1, cliente.getNomeUtente());
+            stmt.setString(2, cliente.getPassword());
+            stmt.setString(3, cliente.getEmail());
+            stmt.setString(4, cliente.getNumeroTelefono());
+            stmt.setInt(5, cliente.getNumeroOrdini());
+            stmt.setString(6, cliente.getNumeroCarta());
 
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new DAOException("Errore nell'inserimento del dettaglio ordine");
+            throw new DAOException("Errore nella creazione del cliente registrato");
         }
     }
 
-    public static List<DettagliOrdineEntity> leggiDettagliOrdine(int idOrdine)
-            throws DAOException, DBConnectionException {
-        String query = "SELECT * FROM Carrello WHERE IDOrdine = ?";
-        List<DettagliOrdineEntity> dettagli = new ArrayList<>();
+    public static ClienteRegistratoEntity leggiCliente(String nomeUtente) throws DAOException, DBConnectionException {
+        String query = "SELECT * FROM ClientiRegistrati WHERE NomeUtente = ?";
+        ClienteRegistratoEntity cliente = null;
 
         try (Connection conn = DBManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setInt(1, idOrdine);
+            stmt.setString(1, nomeUtente);
 
             try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    dettagli.add(new DettagliOrdineEntity(
-                            rs.getInt("IDOrdine"),
-                            rs.getString("CodiceProdotto"),
-                            rs.getInt("Quantita")
-                    ));
+                if (rs.next()) {
+                    cliente = new ClienteRegistratoEntity(
+                            rs.getString("NomeUtente"),
+                            rs.getString("Password"),
+                            rs.getString("Email"),
+                            rs.getString("NumeroTelefono"),
+                            rs.getInt("NumeroOrdini"),
+                            rs.getString("NumeroCarta")
+                    );
                 }
             }
 
         } catch (SQLException e) {
-            throw new DAOException("Errore nella lettura dei dettagli ordine");
+            throw new DAOException("Errore nella lettura del cliente");
         }
 
-        return dettagli;
+        return cliente;
     }
 
-    public static void eliminaDettagliPerOrdine(int idOrdine)
-            throws DAOException, DBConnectionException {
-        String query = "DELETE FROM Carrello WHERE IDOrdine = ?";
+    public static void aggiornaCliente(ClienteRegistratoEntity cliente) throws DAOException, DBConnectionException {
+        String query = "UPDATE ClientiRegistrati SET Password = ?, Email = ?, NumeroTelefono = ?, NumeroOrdini = ?, NumeroCarta = ? WHERE NomeUtente = ?";
 
         try (Connection conn = DBManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setInt(1, idOrdine);
+            stmt.setString(1, cliente.getPassword());
+            stmt.setString(2, cliente.getEmail());
+            stmt.setString(3, cliente.getNumeroTelefono());
+            stmt.setInt(4, cliente.getNumeroOrdini());
+            stmt.setString(5, cliente.getNumeroCarta());
+            stmt.setString(6, cliente.getNomeUtente());
+
             stmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new DAOException("Errore nell'eliminazione dei dettagli ordine");
+            throw new DAOException("Errore durante l'aggiornamento del cliente");
         }
     }
 
-    public static void aggiungiOIncrementaProdotto(int idOrdine, String codiceProdotto, int quantitaDaAggiungere)
-            throws DAOException, DBConnectionException {
-        String checkQuery = "SELECT Quantita FROM Carrello WHERE IDOrdine = ? AND CodiceProdotto = ?";
-        String updateQuery = "UPDATE Carrello SET Quantita = Quantita + ? WHERE IDOrdine = ? AND CodiceProdotto = ?";
-        String insertQuery = "INSERT INTO Carrello (IDOrdine, CodiceProdotto, Quantita) VALUES (?, ?, ?)";
+    public static void eliminaCliente(String nomeUtente) throws DAOException, DBConnectionException {
+        String query = "DELETE FROM ClientiRegistrati WHERE NomeUtente = ?";
 
-        try (Connection conn = DBManager.getConnection()) {
+        try (Connection conn = DBManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
-                checkStmt.setInt(1, idOrdine);
-                checkStmt.setString(2, codiceProdotto);
-
-                try (ResultSet rs = checkStmt.executeQuery()) {
-                    if (rs.next()) {
-                        try (PreparedStatement updateStmt = conn.prepareStatement(updateQuery)) {
-                            updateStmt.setInt(1, quantitaDaAggiungere);
-                            updateStmt.setInt(2, idOrdine);
-                            updateStmt.setString(3, codiceProdotto);
-                            updateStmt.executeUpdate();
-                        }
-                    } else {
-                        // Nuova riga
-                        try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
-                            insertStmt.setInt(1, idOrdine);
-                            insertStmt.setString(2, codiceProdotto);
-                            insertStmt.setInt(3, quantitaDaAggiungere);
-                            insertStmt.executeUpdate();
-                        }
-                    }
-                }
-            }
+            stmt.setString(1, nomeUtente);
+            stmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new DAOException("Errore nell'aggiunta o aggiornamento del prodotto nel carrello");
+            throw new DAOException("Errore nella rimozione del cliente");
         }
     }
-    
+
+    public static void incrementaNumeroOrdini(String nomeUtente) throws DAOException, DBConnectionException {
+        String query = "UPDATE ClientiRegistrati SET NumeroOrdini = NumeroOrdini + 1 WHERE NomeUtente = ?";
+
+        try (Connection conn = DBManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, nomeUtente);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DAOException("Errore nell'incremento del numero ordini");
+        }
+    }
 }
+
