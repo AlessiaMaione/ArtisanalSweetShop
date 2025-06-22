@@ -1,16 +1,16 @@
-package com.example.ArtisanalSweetShopping.Control;
+package com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Control;
 
-import com.example.ArtisanalSweetShopping.Database.ScontoDAO;
-import com.example.ArtisanalSweetShopping.Entity.ScontoEntity;
-import com.example.ArtisanalSweetShopping.Exception.DAOException;
-import com.example.ArtisanalSweetShopping.Exception.DBConnectionException;
-import com.example.ArtisanalSweetShopping.Exception.OperationException;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Database.ScontoDAO;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Entity.ScontoEntity;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Exception.DAOException;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Exception.DBConnectionException;
+import com.example.ArtisanalSweetShopping.com.example.ArtisanalSweetShopping.Exception.OperationException;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ScontoControl {
+public class GestioneScontoControl {
 
     private static final Map<String, ScontoEntity> scontiTemporanei = new HashMap<>();
 
@@ -39,7 +39,7 @@ public class ScontoControl {
                     input.idImpiegato,
                     input.utilizzato
             );
-            ScontoDAO.inserisciSconto(sconto);
+            ScontoDAO.creaSconto(sconto);
             scontiTemporanei.put(sconto.getCodiceSconto(), sconto);
             return new OutputSconto(sconto, "Sconto inserito correttamente.");
         } catch (DAOException | DBConnectionException e) {
